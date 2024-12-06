@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labyrinthe avec Poisson et Algues</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #1e90ff, #00bfff);
+            color: #ffffff;
+            overflow-y: auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        section {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            line-height: 1.6;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+        }
+
+        #maze-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        #maze {
+            display: grid;
+            grid-template-columns: repeat(30, 31px);
+            grid-template-rows: repeat(20, 25px);
+            gap: 1px;
+            background-color: #ffffff;
+            border: 5px solid #0077be;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            position: relative;
+        }
+
+        .free {
+            background-color: #e0f7fa;
+            border: 1px solid #bbdefb;
+        }
+
+        .algae {
+            background-image: url('algue.jpg');
+            background-size: cover;
+        }
+
+        .fish {
+            background-image: url('fish.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .hook {
+            background-image: url('hamecon.webp');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        #message {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: yellowgreen;
+        }
+
+        #restartBtn, #backBtn {
+            display: none;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        #restartBtn {
+            background: #ff5722;
+            color: #ffffff;
+        }
+
+        #restartBtn:hover {
+            background: #e64a19;
+        }
+
+        #backBtn {
+            background: #2196f3;
+            color: #ffffff;
+        }
+
+        #backBtn:hover {
+            background: #1976d2;
+        }
+        .retour {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            background: #ff5722;
+            color: white;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="PagePrinc1.html" class="retour">Retour</a>
+        <h1>Comment les animaux marins se déplacent ?</h1>
+    </header>
+
+    <section>
+        <p>Chaque animal a son propre style de déplacement, qui dépend de son environnement marin. Ils vivent soit en pleine eau, soit sur le fond sableux ou rocheux.</p>
+        <p><b>Nager :</b> Les poissons se propulsent grâce à l'ondulation de leur corps et non leurs nageoires. Certaines espèces, comme la raie, utilisent leurs nageoires pour se propulser.</p>
+        <p><b>Marcher :</b> Mode de déplacement des invertébrés vivant sur des supports solides, comme les crabes ou les langoustes qui utilisent leurs pattes articulées.</p>
+        <p><b>Ramper :</b> Les mollusques comme les patelles et les buccins rampent en contractant et relâchant leurs muscles.</p>
+        <p><b>Se cacher :</b> Certains poissons et invertébrés se cachent dans le sable pour se protéger.</p>
+        <p><b>Planer :</b> Certains poissons, comme l'exocet, peuvent planer jusqu'à 200 mètres hors de l'eau grâce à leurs nageoires pectorales.</p>
+    </section>
+
+    <header>
+        <h1>Labyrinthe</h1>
+    </header>
+
+    <div id="maze-container">
+        <div id="maze"></div>
+    </div>
+    <p id="message"></p>
+    <button id="restartBtn">Recommencer</button>
+    <button id="backBtn">Retour</button>
+
+    <script>
+        /* Ajoutez ici la logique de génération du labyrinthe et le mouvement du joueur */
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.history.back(); // Permet de revenir à la page précédente
+        });
+    </script>
+</body>
+</html>
+
+
+
+    <script>
+        function generateMaze(rows, cols, numObstacles) {
+            const maze = Array.from({ length: rows }, () => Array(cols).fill('free'));
+            let path = [[0, 0]];
+            maze[0][0] = 'free'; // Crée un chemin vers la sortie (coin inférieur droit)
+            let current = [0, 0];
+            const directions = [[1, 0], [0, 1]]; // Direction du mouvement (droite et bas)
+
+            // Génération du chemin vers la sortie
+            while (current[0] !== rows - 1 || current[1] !== cols - 1) {
+                const [x, y] = current;
+                const possibleMoves = directions
+                    .map(([dx, dy]) => [x + dx, y + dy])
+                    .filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < rows && ny < cols && maze[nx][ny] === 'free');
+                if (possibleMoves.length > 0) {
+                    const [nextX, nextY] = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                    path.push([nextX, nextY]);
+                    current = [nextX, nextY];
+                    maze[nextX][nextY] = 'free';
+                }
+            }
+
+            // La sortie est toujours la dernière case (bas à droite)
+            maze[rows - 1][cols - 1] = 'hook'; // Hameçon comme objectif
+            maze[rows - 2][cols - 1] = 'free';
+            maze[rows - 1][cols - 2] = 'free';
+
+            // Ajouter des algues tout en s'assurant qu'elles ne bloquent pas le chemin
+            let obstaclesPlaced = 0;
+            while (obstaclesPlaced < numObstacles) {
+                const rx = Math.floor(Math.random() * rows);
+                const ry = Math.floor(Math.random() * cols);
+
+                // Ajouter des algues uniquement si ce n'est pas le joueur ou l'objectif
+                if (maze[rx][ry] === 'free' && !(rx === 0 && ry === 0) && !(rx === rows - 1 && ry === cols - 1)) {
+                    maze[rx][ry] = 'algae';
+
+                    // Si une algue empêche d'atteindre la sortie, on la retire
+                    if (!isPathClear(maze, rows, cols)) {
+                        maze[rx][ry] = 'free'; // Enlève l'algue si le chemin est bloqué
+                    } else {
+                        obstaclesPlaced++;
+                    }
+                }
+            }
+            return maze;
+        }
+
+        // Vérifie que le chemin reste accessible
+        function isPathClear(maze, rows, cols) {
+            const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+            const stack = [[0, 0]];
+            while (stack.length > 0) {
+                const [x, y] = stack.pop();
+                if (visited[x][y]) continue;
+                visited[x][y] = true;
+                const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]]; // Haut, Bas, Gauche, Droite
+                directions.forEach(([dx, dy]) => {
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    if (nx >= 0 && ny >= 0 && nx < rows && ny < cols && maze[nx][ny] !== 'algae' && !visited[nx][ny]) {
+                        stack.push([nx, ny]);
+                    }
+                });
+            }
+
+            // Vérifie que toutes les cases 'free' sont accessibles
+            for (let x = 0; x < rows; x++) {
+                for (let y = 0; y < cols; y++) {
+                    if (maze[x][y] === 'free' && !visited[x][y]) {
+                        return false; // Si une case 'free' n'est pas visitée, le chemin est bloqué
+                    }
+                }
+            }
+            return true;
+        }
+
+        function createMazeElement(maze) {
+            const mazeContainer = document.getElementById('maze');
+            mazeContainer.innerHTML = '';
+            maze.forEach((row, x) => {
+                row.forEach((cell, y) => {
+                    const cellElement = document.createElement('div');
+                    cellElement.className = `cell ${cell}`;
+                    cellElement.dataset.x = x;
+                    cellElement.dataset.y = y;
+
+                    // Ajouter des images pour le poisson, l'hameçon et les algues
+                    if (cell === 'fish') {
+                        const fishImg = document.createElement('img');
+                        fishImg.src = 'fish.png';  // Remplacez par le chemin de votre image de poisson
+                        fishImg.alt = 'Poisson';
+                        fishImg.style.width = '30px';
+                        fishImg.style.height = '30px';
+                        cellElement.appendChild(fishImg);
+                    } else if (cell === 'hook') {
+                        const hookImg = document.createElement('img');
+                        hookImg.src = 'hamecon.webp';  // Remplacez par le chemin de votre image de hameçon
+                        hookImg.alt = 'Hameçon';
+                        hookImg.style.width = '30px';
+                        hookImg.style.height = '30px';
+                        cellElement.appendChild(hookImg);
+                    } else if (cell === 'algae') {
+                        const algaeImg = document.createElement('img');
+                        algaeImg.src = 'algue.jpg';  // Remplacez par le chemin de votre image d'algue
+                        algaeImg.alt = 'Algue';
+                        algaeImg.style.width = '30px';
+                        algaeImg.style.height = '30px';
+                        cellElement.appendChild(algaeImg);
+                    }
+
+                    mazeContainer.appendChild(cellElement);
+                });
+            });
+        }
+        function movePlayer(event) {
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+        event.preventDefault();
+    }
+    const directions = {
+        ArrowUp: [-1, 0, 'fish-up'],     // Déplacement vers le haut
+        ArrowDown: [1, 0, 'fish-down'],  // Déplacement vers le bas
+        ArrowLeft: [0, -1, 'fish-left'], // Déplacement vers la gauche
+        ArrowRight: [0, 1, 'fish-right'], // Déplacement vers la droite
+    };
+
+    const [dx, dy, rotationClass] = directions[event.key] || [0, 0, null];
+
+    const newX = playerPos[0] + dx;
+    const newY = playerPos[1] + dy;
+
+    if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length) {
+        if (maze[newX][newY] === 'free' || maze[newX][newY] === 'hook') {
+            // Retirer le poisson de la cellule précédente
+            const currentCell = document.querySelector(`[data-x='${playerPos[0]}'][data-y='${playerPos[1]}']`);
+            currentCell.classList.remove('fish', 'fish-right', 'fish-down', 'fish-left', 'fish-up');
+            
+            // Mettre à jour la position du joueur
+            playerPos = [newX, newY];
+            const newCell = document.querySelector(`[data-x='${newX}'][data-y='${newY}']`);
+            
+            // Ajouter la classe pour appliquer la rotation
+            newCell.classList.add('fish');
+            newCell.classList.add(rotationClass);  // Applique la classe de rotation
+
+            if (maze[newX][newY] === 'hook') {
+                document.getElementById('message').textContent = 'Vous avez gagné !';
+                document.getElementById('restartBtn').style.display = 'block'; // Affiche le bouton
+                window.removeEventListener('keydown', movePlayer); // Désactive les déplacements
+            }
+        }
+    }
+}
+
+
+        function restartGame() {
+            const maze = generateMaze(30, 40, 500); // Génère un labyrinthe avec 500 obstacles
+            playerPos = [0, 0];
+            document.getElementById('message').textContent = '';
+            document.getElementById('restartBtn').style.display = 'none'; // Cache le bouton
+            createMazeElement(maze);
+            document.querySelector('[data-x="0"][data-y="0"]').classList.add('fish');
+            window.addEventListener('keydown', movePlayer); // Réactive les déplacements
+        }
+
+        const maze = generateMaze(20, 30, 200); // Génère un labyrinthe avec 500 obstacles
+        let playerPos = [0, 0];
+        createMazeElement(maze);
+        document.querySelector('[data-x="0"][data-y="0"]').classList.add('fish');
+        window.addEventListener('keydown', movePlayer);
+        document.getElementById('restartBtn').addEventListener('click', restartGame); // Redémarre le jeu quand le bouton est cliqué
+    </script>
+</body>
+</html>
+
+

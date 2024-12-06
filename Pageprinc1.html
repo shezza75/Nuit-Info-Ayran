@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corps Humain Interactif</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        header{
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          text-align: center;
+          gap: 10%;
+          padding: 3%;
+          background-color: rgba(31, 70, 211, 0.849);
+          margin: 0;
+          position:sticky;
+        }
+
+        .lien{
+            text-decoration: none;
+            text-align: center;
+            color: white;
+        }
+
+        .lien:hover{
+            text-decoration: underline;
+        }
+
+        .titre{
+          color: white;
+          font-size: 25px;
+        }
+
+        .li{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            text-align: center;
+            gap: 5%;
+        }
+
+    </style>
+</head>
+<body>
+
+  <header>
+    <div>
+        <a class="titre">L'océan et moi</a>
+    </div>
+    <div class="li">
+        <a href="video.html" class="lien">Ressources Videos</a>
+    </div>
+</header>
+  
+    <h1>Explorez le corps humain</h1>
+
+    <!-- Image du corps humain avec une carte -->
+    <img src="corps2_preview_rev_1.png" usemap="#bodymap" alt="Human body map" width="800" height="auto">
+
+    <!-- Définir les zones cliquables -->
+    <map name="bodymap">
+        <!-- Zone de la tête (ajustée) -->
+        <area shape="rect" coords="280,40,420,120" href="head_page.html" alt="Tête">
+        
+        <!-- Zone du torse (ajustée) -->
+        <area shape="rect" coords="280,130,420,300" href="torso_page.html" alt="Torse">
+        
+        <!-- Zone des bras (ajustée) -->
+        <area shape="rect" coords="50,120,700,250" href="arms.html" alt="Bras">
+        
+        <!-- Zone des jambes (encore plus bas) -->
+        <area shape="rect" coords="280,430,420,800" href="legs_page.html" alt="Jambes">
+    </map>
+
+</body>
+</html>
